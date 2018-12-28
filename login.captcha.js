@@ -1,14 +1,15 @@
 const request = require("request").defaults({encoding:null});
 const cookie = require('cookie');
 const urls = {
-  main:"http://210.70.131.56/online/information.asp",
-  captcha:"http://210.70.131.56/online/image/vcode.asp?vcode=0",
+  main:"http://210.70.131.56/online",
+  home:"/information.asp",
+  captcha:"/image/vcode.asp?vcode=0",
 }
 
 function setup(returnIt){
   var jar = request.jar();
   let options = {
-    url:urls.main,
+    url:urls.main+urls.home,
     jar:jar
   }
   request(options, (e,r,d)=> returnIt((r&&r.statusCode===200?{jar:jar}:{error:e})) );
@@ -18,7 +19,7 @@ function main(callback, urlcode = false){
   setup(({error, jar})=>{
     if(!error&&jar){
       let options = {
-        url:urls.captcha,
+        url:urls.main+urls.captcha,
         jar:jar
       }
       request(options, (e,r,d)=>{
