@@ -10,6 +10,8 @@ const urls = {
 function main({account, password, captcha, cookie}, callback){
   if(cookie==undefined)
     return callback({error:"Cookie is not defined"});
+  else if(/\D/g.test(captcha))
+    return callback({error:"Wrong CAPTCHA type"});
    let options = {
      url:urls.main+urls.login,
      jar:cookie,
@@ -18,9 +20,9 @@ function main({account, password, captcha, cookie}, callback){
        Loginid:account,
        LoginPwd:password,
        Uid:"",
-       vcode:parseInt(captcha)
+       vcode:captcha
      }
-   }
+   };
    request.post(options, (e,r,d)=>{
      if(e||!d)throw e;
      let data = (iconv.decode(d, "Big5"))
