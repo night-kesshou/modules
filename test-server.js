@@ -108,7 +108,10 @@ app.use('/login', (req, res)=>{
     return res.end('<a href="/">請重新登入</a>');
   res.setHeader('Content-Type', 'text/plain');
   login(req.post, (result)=>{
-    res.end(result);
+    console.log(result.source);
+    if(result.error||!result.message)
+      return res.end(result.error);
+    res.end(result.message);
   })
 });
 

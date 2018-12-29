@@ -6,32 +6,13 @@ const urls = {
   main:"http://210.70.131.56/online",
   login:"/login.asp"
 };
-/*
-login infomation:
-  json:{
-    division:"senior",
-    Loginid:"account",
-    LoginPwd:"password",
-    Uid:"",
-    vcode:"CAPTCHA"
-  }
-
-  split:
-    division=senior
-    Loginid=account
-    LoginPwd=password
-    Uid=
-    vcode=6268
-
-  source:division=senior&Loginid=account&LoginPwd=password&Uid=&vcode=6268
-*/
-//const loginPage = "http://210.70.131.56/online/login.asp";
 
 function main({account, password, captcha, cookie}, callback){
   if(cookie==undefined)
     return callback({error:"Cookie is not defined"});
    let options = {
      url:urls.main+urls.login,
+     jar:cookie,
      form:{
        division:"senior",
        Loginid:account,
@@ -42,9 +23,20 @@ function main({account, password, captcha, cookie}, callback){
    }
    request.post(options, (e,r,d)=>{
      if(e||!d)throw e;
-     callback(d);
+     let data = (iconv.decode(d, "Big5"))
+     let $ = cheerio.load(data);
+     //let result = new Object();
+     let result = {
+       buffer:d,
+       source:data
+     }
+     if(data.indexOf(/物件已移動/g)>-1){
+       result.message = "login succuess";
+     }else{
+       result.error = $("#msg").eq(0).attr("value");
+     }
+     callback(result);
    });
-   //console.log(account, password, captcha, cookie);
 }
 
 module.exports = main;
