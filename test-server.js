@@ -106,7 +106,7 @@ app.use('/login', (req, res)=>{
   req.post.cookie = session.cookie;
   if(req.post.cookie==undefined)
     return res.end('<a href="/">請重新登入</a>');
-  res.setHeader('Content-Type', 'plain/text');
+  res.setHeader('Content-Type', 'text/plain');
   login(req.post, (result)=>{
     res.end(result);
   })
