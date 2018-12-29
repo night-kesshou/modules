@@ -75,7 +75,13 @@ core.prototype.readFromPublic = function(req, res){
   });
 }
 
+
+
 //-----------------------------router--------------------------------
+
+
+
+
 const http = require('http');
 const login = require("./login"),
       captcha = require("./login.captcha");
@@ -104,37 +110,18 @@ app.use('/', (req, res)=>{
 app.use('/login', (req, res)=>{
   //console.log(req.post);
   req.post.cookie = session.cookie;
-  if(req.post.cookie==undefined)
+  if(req.post.cookie==undefined){
+    res.setHeader('Content-Type', 'text/html;charset=UTF-8');
     return res.end('<a href="/">請重新登入</a>');
-  res.setHeader('Content-Type', 'text/plain');
+  }
+  res.setHeader('Content-Type', 'text/plain;charset=UTF-8');
+
   login(req.post, (result)=>{
     console.log(result.source);
     if(result.error||!result.message)
       return res.end(result.error);
     res.end(result.message);
-  })
+  });
 });
 
 http.createServer((req, res)=>app.route(req, res)).listen(3000);
-/*const http = require('http'),
-      { URL } = require('url');
-const captcha = require("./login.captcha");
-//console.log(URL);
-var session = new Object();
-http.createServer((req, res)=>{
-  if(req.url=="/"){
-    captcha((result)=>{
-      session.cookie = result.cookie;
-      res.end(`<form>
-      Account: <input name="account"><br/>
-      Password: <input name="password"><br/>
-      <img src="${result.captcha}"><br/>
-      CAPTCHA: <input name="captcha"><br/>
-      <input type="submit">
-      </form>`)
-    }, 1);
-  }else{
-    let query = (URL.parse(req.url, true));
-    console.log(query)
-  }
-}).listen(3000);*/

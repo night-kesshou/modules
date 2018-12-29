@@ -30,10 +30,11 @@ function main({account, password, captcha, cookie}, callback){
        buffer:d,
        source:data
      }
-     if(data.indexOf(/物件已移動/g)>-1){
+     var r = $("#msg");
+     if(r.length===0){
        result.message = "login succuess";
      }else{
-       result.error = $("#msg").eq(0).attr("value");
+       result.error = r.eq(0).attr("value");
      }
      callback(result);
    });
