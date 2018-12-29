@@ -2,10 +2,7 @@ const request = require('request').defaults({encoding:null}),
       cheerio = require('cheerio'),
       iconv = require('iconv-lite');
 
-const urls = {
-  main:"http://210.70.131.56/online",
-  login:"/login.asp"
-};
+const urls = require('./urls');
 
 function main({account, password, captcha, cookie}, callback){
   if(cookie==undefined)

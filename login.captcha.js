@@ -1,10 +1,6 @@
 const request = require("request").defaults({encoding:null});
-const cookie = require('cookie');
-const urls = {
-  main:"http://210.70.131.56/online",
-  home:"/information.asp",
-  captcha:"/image/vcode.asp?vcode=0",
-}
+
+const urls = require('./urls')
 
 function setup(returnIt){
   var jar = request.jar();

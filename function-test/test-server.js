@@ -83,8 +83,7 @@ core.prototype.readFromPublic = function(req, res){
 
 
 const http = require('http');
-const login = require("./login"),
-      captcha = require("./login.captcha");
+const system = require('../index');
 var app = new core('simple server');
 var session = new Object();
 app.setPublic(__dirname+'/public');
@@ -95,29 +94,37 @@ app.set((req, res, next)=>{
 });
 
 app.use('/', (req, res)=>{
-  captcha((result)=>{
+  system.captcha(result=>{
     session.cookie = result.cookie;
-    res.end(`<form method="POST" action="/login">
-    Account: <input name="account"><br/>
-    Password: <input name="password"><br/>
-    <img src="${result.captcha}"><br/>
-    CAPTCHA: <input name="captcha"><br/>
-    <input type="submit">
-    </form>`)
+    res.end(`<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>Kesshou</title>
+</head>
+<body>
+<form method="POST" action="/login">
+  Account: <input name="account"><br/>
+  Password: <input name="password"><br/>
+  <img src="${result.captcha}"><br/>
+  CAPTCHA: <input name="captcha"><br/>
+  <input type="submit">
+</form>
+</body>
+</html>`);
   }, 1);
 });
 
 app.use('/login', (req, res)=>{
-  //console.log(req.post);
   req.post.cookie = session.cookie;
   if(req.post.cookie==undefined){
     res.setHeader('Content-Type', 'text/html;charset=UTF-8');
     return res.end('<a href="/">請重新登入</a>');
   }
   res.setHeader('Content-Type', 'text/plain;charset=UTF-8');
-
-  login(req.post, (result)=>{
-    console.log(result.source);
+  system.login(req.post, (result)=>{
     if(result.error||!result.message)
       return res.end(result.error);
     res.end(result.message);
