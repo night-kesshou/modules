@@ -83,10 +83,24 @@ core.prototype.readFromPublic = function(req, res){
 
 
 const http = require('http');
+const session = require('express-session');
+const request = require('request');
 const system = require('../index');
+const cookie = require('cookie');
+const generateCookieJar = (key, val) => {
+	let cookieJar = request.jar()
+	let cookies = request.cookie(`${key}=${val}`)
+	cookieJar.setCookie(cookies, 'http://210.70.131.56')
+	return cookieJar
+}
+
 var app = new core('simple server');
-var session = new Object();
 app.setPublic(__dirname+'/public');
+
+app.set(session({
+  secret:random(),
+  cookie:{maxAge:60*60*1000}
+}));
 
 app.set((req, res, next)=>{
   console.log(req.method, req.url);
@@ -95,7 +109,9 @@ app.set((req, res, next)=>{
 
 app.use('/', (req, res)=>{
   system.captcha(result=>{
-    session.cookie = result.cookie;
+    console.log(req.session);
+    req.session.jar = result.cookie;
+    req.session.captcha = result.captcha;
     res.end(`<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -118,17 +134,48 @@ app.use('/', (req, res)=>{
 });
 
 app.use('/login', (req, res)=>{
-  req.post.cookie = session.cookie;
+  let jar = req.session.jar._jar;
+  req.post.cookie = generateCookieJar(jar.cookies[0].key, jar.cookies[0].value);
   if(req.post.cookie==undefined){
     res.setHeader('Content-Type', 'text/html;charset=UTF-8');
     return res.end('<a href="/">請重新登入</a>');
   }
   res.setHeader('Content-Type', 'text/plain;charset=UTF-8');
+  console.log(req.post.cookie);
   system.login(req.post, (result)=>{
     if(result.error||!result.message)
       return res.end(result.error);
     res.end(result.message);
   });
 });
+
+app.use('/grade', (req, res)=>{
+  let jar = req.session.jar._jar;
+  let cookie = generateCookieJar(jar.cookies[0].key, jar.cookies[0].value);
+  return system.query.grade({jar:cookie, year:req.query.grade||1}, (result)=>{
+    console.log(result.grade);
+    res.setHeader('Content-Type', 'applocation/json;charset=UTF-8');
+    res.end(JSON.stringify(result.grade));
+  });
+});
+
+app.use('/session/set', (req, res)=>{
+  req.session.num = ~~(Math.random()*1024);
+  res.setHeader('Content-Type', 'text/html;charset=UTF-8');
+  res.end(`<a href="/session/show">test</a>`);
+});
+
+app.use('/session/show', (req, res)=>{
+  res.setHeader('Content-Type', 'text/html;charset=UTF-8');
+  res.end(`<a href="/session/set">test</a><p>random number: ${req.session.num}</p>`);
+});
+
+function random(len = 64){
+  const letter = "abcdefghijklmnopqrstuvwxyz0987654321ABCDEFGHIJKLMNOPQRSTUVWXYZ~!@#$%^&*()_+`-=/.,?><\\';\"[]{}|";
+  let str = "";
+  while(str.length<len)
+    str+=letter[~~(Math.random()*letter.length)];
+  return str;
+}
 
 http.createServer((req, res)=>app.route(req, res)).listen(3000);
