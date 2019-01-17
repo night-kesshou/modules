@@ -19,7 +19,7 @@ function main({jar, year}, callback){
       return callback({error:"connect server error", status:r.statusCode});
       let data = (iconv.decode(d, "Big5")); // data translate to big5
       var temp = cheerio.load(data)('table[class="collapse le_06 padding3 spacing0"]>tbody>tr>td');
-      var grade = {subject:[], credit:[], elective:[], score:{0:[], 1:[]}, total:[]};
+      var grade = {subject:[], credit:[], elective:[], score:{0:[], 1:[]}, total:[], length:0};
       //var grade = {0:[], 1:[], total:[], subject:[]};
       for(var i=11;i<temp.length-2;i+=8){ // 排除非必要資訊, 因此 i從11開始至 html.group(td).length-2 結束
         grade['subject'].push(temp.eq(i).text());
@@ -28,6 +28,7 @@ function main({jar, year}, callback){
         grade['score'][0].push(parseInt(temp.eq(i+3).text()));
         grade['score'][1].push(parseInt(temp.eq(i+6).text()));
         grade['total'].push(parseInt(temp.eq(i+7).text()));
+        grade['length']++;
       }
       return callback({
         data:data,
