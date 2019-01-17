@@ -22,7 +22,7 @@ function main({jar, year}, callback){
       var grade = {subject:[], credit:[], elective:[], score:{0:[], 1:[]}, total:[]};
       //var grade = {0:[], 1:[], total:[], subject:[]};
       for(var i=11;i<temp.length-2;i+=8){ // 排除非必要資訊, 因此 i從11開始至 html.group(td).length-2 結束
-        grade['subject'],push(temp.eq(i).text());
+        grade['subject'].push(temp.eq(i).text());
         grade['credit'].push(parseInt(temp.eq(i+5).text()));
         grade['elective'].push(temp.eq(i+4).text());
         grade['score'][0].push(parseInt(temp.eq(i+3).text()));
