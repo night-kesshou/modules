@@ -4,15 +4,15 @@ const request = require('request').defaults({encoding:null}),
 
 const urls = require('./urls'); //載入URL
 
-function main({jar, year}, callback){
-  if(jar==undefined)
+function main({cookie, year}, callback){
+  if(cookie==undefined)
     return callback({error:"cookie is not define"});
   let y = parseInt(year);
   if(isNaN(y)||y>4||y<0)
     return callback({error:"Useless request"});
   let options = {
     url:urls.main+urls.grade[y],
-    jar:jar
+    jar:cookie
   }
   request(options, (e,r,d)=>{
     if(e||!d)
@@ -23,8 +23,8 @@ function main({jar, year}, callback){
       //var grade = {0:[], 1:[], total:[], subject:[]};
       for(var i=11;i<temp.length-2;i+=8){ // 排除非必要資訊, 因此 i從11開始至 html.group(td).length-2 結束
         grade['subject'].push(temp.eq(i).text());
-        grade['credit'].push(parseInt(temp.eq(i+5).text()));
         grade['elective'].push(temp.eq(i+4).text());
+        grade['credit'].push(parseInt(temp.eq(i+5).text()));
         grade['score'][0].push(parseInt(temp.eq(i+3).text()));
         grade['score'][1].push(parseInt(temp.eq(i+6).text()));
         grade['total'].push(parseInt(temp.eq(i+7).text()));
