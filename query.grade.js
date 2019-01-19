@@ -32,7 +32,8 @@ function main({cookie, year}, callback){
     }
     return callback({
       data:data,
-      grade:grade
+      buffer:d,
+      result:grade
     });
   });
 }
