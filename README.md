@@ -12,15 +12,33 @@ API:
          CAPTCHA:{{base64 image}},
          cookie:{{就是Cookie}}
      }
-   - getGrade
-     - {
-       error:["cookie is not define", "Useless request", "connect server error"]
-       status:serverResponseStatus,
-       grade:{
-         0:[{type:"必修"||"選修", credit:int, score:int}]
-         1:[{type:"必修"||"選修", credit:int, score:int}]
-         total:[int]
-         subject:"科目"
+   - query
+     - grade:
+      ```
+      {
+        error:["cookie is not define", "Useless request", "connect server error"]
+        status:serverResponseStatus,
+        grade:{
+          0:[{type:"必修"||"選修", credit:int, score:int}]
+          1:[{type:"必修"||"選修", credit:int, score:int}]
+          total:[int]
+          subject:"科目"
+        }
+      }
+      ```
+     - performance
+       ```
+       {
+         error:['目標伺服器錯誤', ...],
+         data:STRING,
+         buffer:buffer object
+         result:{
+           genre,
+           occur,
+           approve,
+           cause,
+           method,
+           offset
+         }
        }
-     }
  - /*other function (待開發)*/
