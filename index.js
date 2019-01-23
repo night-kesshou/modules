@@ -1,11 +1,13 @@
 const login = require('./login'),
       captcha = require('./login.captcha'),
       grade = require('./query.grade'),
-      performance = require('./query.performance');
+      performance = require('./query.performance'),
+      attendance = require('./query.attendance');
 
 exports.login = login;
 exports.captcha = captcha;
 exports.query = {
   grade:grade,
-  performance:performance
+  performance:performance,
+  attendance:attendance
 };
